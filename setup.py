@@ -20,7 +20,7 @@ PY2 = sys.version_info[0] == 2
 
 
 def get_version():
-    with open('configsource_s3.py') as f:
+    with open('config_source_s3.py') as f:
         for line in f:
             if line.startswith('__version__'):
                 return eval(line.split('=')[-1])
@@ -37,15 +37,15 @@ if PY2:
 
 
 setup(
-    name='configsource_s3',
+    name='config-source-s3',
     version=get_version(),
-    description='S3 configuration source for configsource package.',
+    description='S3 configuration source for the config-source library.',
     long_description=read('README.rst'),
     author='Sergey Kozlov',
     author_email='dev@ludditelabs.io',
-    py_modules=['configsource_s3'],
-    install_requires=['configsource>=0.0.4', 'boto3'],
-    entry_points={'configsource.sources': 's3 = configsource_s3'},
+    py_modules=['config_source_s3'],
+    install_requires=['config_source>=0.0.4', 'boto3'],
+    entry_points={'config_source.sources': 's3 = config_source_s3'},
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: Apache Software License',

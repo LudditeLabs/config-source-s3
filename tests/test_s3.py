@@ -18,13 +18,13 @@ try:
 except ImportError:
     from mock import patch, call, Mock
 from boto3.exceptions import Boto3Error
-from configsource_s3 import load_from_s3
+from config_source_s3 import load_from_s3
 
 
 # Test: download without caching, mock all cals.
-@patch('configsource_s3.BytesIO')
-@patch('configsource_s3.load_to')
-@patch('configsource_s3.get_bucket')
+@patch('config_source_s3.BytesIO')
+@patch('config_source_s3.load_to')
+@patch('config_source_s3.get_bucket')
 def test_nocache_fake(get_bucket, load_to, BytesIO):
     sio = Mock()
     BytesIO.return_value = sio
@@ -46,8 +46,8 @@ def test_nocache_fake(get_bucket, load_to, BytesIO):
     ]
 
 # Test: download without caching.
-@patch('configsource_s3.BytesIO')
-@patch('configsource_s3.get_bucket')
+@patch('config_source_s3.BytesIO')
+@patch('config_source_s3.get_bucket')
 def test_nocache(get_bucket, BytesIO):
     sio = Mock()
     sio.read.return_value='A=1'
@@ -61,8 +61,8 @@ def test_nocache(get_bucket, BytesIO):
 
 
 # Test: download config to cache file which doesn't exist yet.
-@patch('configsource_s3.load_to')
-@patch('configsource_s3.get_bucket')
+@patch('config_source_s3.load_to')
+@patch('config_source_s3.get_bucket')
 def test_cache(get_bucket, load_to, tmpdir):
     config = Mock()
 
@@ -82,8 +82,8 @@ def test_cache(get_bucket, load_to, tmpdir):
 
 
 # Test: download config to existing cache file.
-@patch('configsource_s3.load_to')
-@patch('configsource_s3.get_bucket')
+@patch('config_source_s3.load_to')
+@patch('config_source_s3.get_bucket')
 def test_cache_exist(get_bucket, load_to, tmpdir):
     config = Mock()
 
@@ -105,8 +105,8 @@ def test_cache_exist(get_bucket, load_to, tmpdir):
 
 
 # Test: download config to existing cache file and force update cache.
-@patch('configsource_s3.load_to')
-@patch('configsource_s3.get_bucket')
+@patch('config_source_s3.load_to')
+@patch('config_source_s3.get_bucket')
 def test_cache_exist_force(get_bucket, load_to, tmpdir):
     config = Mock()
 
@@ -131,8 +131,8 @@ def test_cache_exist_force(get_bucket, load_to, tmpdir):
 
 # Test: download non-existent remote config file.
 # It must raise an error.
-@patch('configsource_s3.load_to')
-@patch('configsource_s3.get_bucket')
+@patch('config_source_s3.load_to')
+@patch('config_source_s3.get_bucket')
 def test_remote_missing(get_bucket, load_to):
     config = Mock()
 
@@ -148,8 +148,8 @@ def test_remote_missing(get_bucket, load_to):
 
 # Test: silently download non-existent remote config file.
 # It must raise an error.
-@patch('configsource_s3.load_to')
-@patch('configsource_s3.get_bucket')
+@patch('config_source_s3.load_to')
+@patch('config_source_s3.get_bucket')
 def test_remote_missing_silent(get_bucket, load_to):
     config = Mock()
 

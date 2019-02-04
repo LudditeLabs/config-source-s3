@@ -1,2 +1,2 @@
-configsource==0.0.5
+config-source==0.0.5
 boto3

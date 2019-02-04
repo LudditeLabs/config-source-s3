@@ -1,5 +1,5 @@
 [run]
-source = configsource_s3
+source = config_source_s3
 branch = true
 
 [report]

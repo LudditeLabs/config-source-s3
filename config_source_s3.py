@@ -18,7 +18,7 @@ import logging
 import boto3
 from io import BytesIO
 from boto3.exceptions import Boto3Error
-from configsource import config_source, load_to
+from config_source import config_source, load_to
 
 __version__ = '0.0.3'
 
