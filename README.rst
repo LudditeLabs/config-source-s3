@@ -1,4 +1,4 @@
-config_source_s3
+config-source-s3
 ================
 
 .. image:: https://travis-ci.org/LudditeLabs/config-source-s3.svg?branch=master
