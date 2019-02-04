@@ -5,4 +5,4 @@ config-source-s3
    :target: https://travis-ci.org/LudditeLabs/config-source-s3
 
 S3 configuration source for the
-`config_source <https://github.com/LudditeLabs/config-source>`_ library.
+`config-source <https://github.com/LudditeLabs/config-source>`_ library.
