@@ -18,10 +18,54 @@ try:
 except ImportError:
     from mock import patch, call, Mock
 from boto3.exceptions import Boto3Error
-from config_source_s3 import load_from_s3
+from config_source_s3 import load_from_s3, split_s3_path
 
 
-# Test: download without caching, mock all cals.
+# Test: split_s3_path().
+@pytest.mark.parametrize('path,parts', [
+    ('s3://my-bucket', ('my-bucket', '')),
+    ('s3://my-bucket/filename', ('my-bucket', 'filename')),
+    ('s3://my-bucket/dir/', ('my-bucket', 'dir')),
+    ('s3://my-bucket/dir/filename', ('my-bucket', 'dir/filename')),
+])
+def test_split_s3_path(path, parts):
+    assert split_s3_path(path) == parts
+
+
+# Test: split_s3_path() with invalid paths.
+@pytest.mark.parametrize('path', [
+    's3:/my-bucket',
+    's3:/my-bucket/filename',
+    '/my-bucket/dir/',
+    'my-bucket/dir/filename',
+    's3://',
+])
+def test_split_s3_path_invalid(path):
+    with pytest.raises(ValueError):
+        split_s3_path(path)
+
+
+# Test: pass invalid S3 filename.
+@patch('config_source_s3.load_to')
+@patch('config_source_s3.get_bucket')
+def test_invalid_path(get_bucket, load_to):
+    config = Mock()
+    with pytest.raises(ValueError) as e:
+        load_from_s3(config, '/somebucket/mycfg.py')
+    assert str(e.value) == 'Invalid S3 path'
+
+
+# Test: pass valid S3 path but without filename.
+@patch('config_source_s3.load_to')
+@patch('config_source_s3.get_bucket')
+def test_empty_filename(get_bucket, load_to):
+    config = Mock()
+    with pytest.raises(ValueError) as e:
+        load_from_s3(config, 's3://somebucket')
+    assert str(e.value) == 'Empty filename'
+
+
+# Test: download without caching, mock all calls.
 @patch('config_source_s3.BytesIO')
 @patch('config_source_s3.load_to')
 @patch('config_source_s3.get_bucket')
@@ -34,7 +78,7 @@ def test_nocache_fake(get_bucket, load_to, BytesIO):
     m.attach_mock(BytesIO, 'BytesIO')
 
     config = Mock()
-    load_from_s3(config, bucket_name='somebucket', filename='mycfg.py')
+    load_from_s3(config, 's3://somebucket/mycfg.py')
 
     assert m.mock_calls == [
         call.BytesIO(),
@@ -50,11 +94,11 @@ def test_nocache_fake(get_bucket, load_to, BytesIO):
 @patch('config_source_s3.get_bucket')
 def test_nocache(get_bucket, BytesIO):
     sio = Mock()
-    sio.read.return_value='A=1'
+    sio.read.return_value = 'A=1'
 
     BytesIO.return_value = sio
     config = {}
-    res = load_from_s3(config, bucket_name='somebucket', filename='mycfg.py')
+    res = load_from_s3(config, filename='s3://somebucket/mycfg.py')
 
     assert res is True
     assert config == {'A': 1}
@@ -68,7 +112,7 @@ def test_cache(get_bucket, load_to, tmpdir):
 
     out_filename = str(tmpdir.join('out.py'))
 
-    load_from_s3(config, bucket_name='somebucket', filename='mycfg.py',
+    load_from_s3(config, filename='s3://somebucket/mycfg.py',
                  cache_filename=out_filename)
 
     # It must download mycfg.py to cache file.
@@ -92,7 +136,7 @@ def test_cache_exist(get_bucket, load_to, tmpdir):
 
     out_filename = str(cache)
 
-    load_from_s3(config, bucket_name='somebucket', filename='mycfg.py',
+    load_from_s3(config, filename='s3://somebucket/mycfg.py',
                  cache_filename=out_filename)
 
     # If cache file exists and 'update_cache' is not set then it won't
@@ -115,7 +159,7 @@ def test_cache_exist_force(get_bucket, load_to, tmpdir):
 
     out_filename = str(cache)
 
-    load_from_s3(config, bucket_name='somebucket', filename='mycfg.py',
+    load_from_s3(config, filename='s3://somebucket/mycfg.py',
                  cache_filename=out_filename, update_cache=True)
 
     # It must download mycfg.py and overwirte cache file
@@ -139,7 +183,7 @@ def test_remote_missing(get_bucket, load_to):
     get_bucket().download_fileobj.side_effect = Boto3Error('test')
 
     with pytest.raises(Boto3Error) as e:
-        load_from_s3(config, bucket_name='somebucket', filename='mycfg.py')
+        load_from_s3(config, filename='s3://somebucket/mycfg.py')
 
     assert str(e.value) == 'test'
 
@@ -155,8 +199,7 @@ def test_remote_missing_silent(get_bucket, load_to):
 
     get_bucket().download_fileobj.side_effect = Boto3Error('test')
 
-    res = load_from_s3(config, bucket_name='somebucket', filename='mycfg.py',
-                       silent=True)
+    res = load_from_s3(config, filename='s3://somebucket/mycfg.py', silent=True)
 
     assert res is False
 
