@@ -1,7 +1,10 @@
 -r requirements.txt
-pytest==3.4.2
-pytest-cov==2.5.1
-tox==2.9.1
-tox-pyenv
+pytest==4.6.5
+pytest-cov==2.8.1
+tox==3.14.0
+tox-pyenv==1.1.0
 mock==2.0.0
-wheel
+flake8==3.7.8
+flake8_docstrings==1.5.0
+wheel==0.32.3
+twine==1.12.1
