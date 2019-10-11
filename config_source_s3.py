@@ -59,13 +59,13 @@ def get_bucket(bucket_name, profile=None, access_key=None, secret_key=None):
     """Get S3 bucket.
 
     Args:
-        bucket_name:
-        profile:
-        access_key:
-        secret_key:
+        bucket_name: S3 sucket name.
+        profile: AWS profile.
+        access_key: AWS access key.
+        secret_key: AWS secret key.
 
     Returns:
-
+        Bucket object.
     """
     logger.info('Connecting to S3...')
     session = boto3.Session(
