@@ -20,7 +20,7 @@ from io import BytesIO
 from boto3.exceptions import Boto3Error
 from config_source import config_source, load_to
 
-__version__ = '0.0.3'
+__version__ = '0.1.0'
 
 logger = logging.getLogger(__name__)
 
