@@ -1,6 +1,7 @@
 [run]
-source = config_source_s3
+source = src/
 branch = true
+omit = tests/*
 
 [report]
 show_missing = true
